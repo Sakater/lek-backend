@@ -2,18 +2,7 @@ package com.example.lekbackend.dao
 
 import com.example.lekbackend.enums.Subject
 import com.example.lekbackend.enums.TaskType
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.EntityListeners
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.OneToMany
-import jakarta.persistence.CascadeType
-import jakarta.persistence.SequenceGenerator
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
@@ -58,6 +47,9 @@ data class Task(
     @Column(nullable = false)
     val points: Int,
 
+    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    val options: List<Option> = emptyList(),
+
     @Column(name = "options_in_a_row", nullable = true)
     val optionsInARow: Int? = null,
 
@@ -73,5 +65,7 @@ data class Task(
     val updatedAt: LocalDateTime? = null,
 
     @Column(nullable = true)
-    val createdBy: String? = null,
-)
+    val createdBy: String? = null
+
+
+    )

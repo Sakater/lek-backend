@@ -1,11 +1,15 @@
-package  com.example.lekbackend.repository
+package com.example.lekbackend.repository
+
 import com.example.lekbackend.dao.Task
+import org.springframework.data.jpa.domain.Specification
+import org.springframework.data.jpa.repository.EntityGraph
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.stereotype.Repository
-import org.springframework.transaction.annotation.Transactional
-import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
-@Transactional(readOnly = false)
-interface TaskRepository:JpaRepository<Task, Long> {
+interface TaskRepository : JpaRepository<Task, Long>, JpaSpecificationExecutor<Task> {
 
+   // @EntityGraph(attributePaths = ["options"])
+   // fun findAll(spec: Specification<Task>?): MutableList<Task>
 }
