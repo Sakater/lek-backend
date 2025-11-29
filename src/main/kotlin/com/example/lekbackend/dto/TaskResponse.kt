@@ -1,4 +1,4 @@
 package com.example.lekbackend.dto
 
-class TasksResponse {
+class TaskResponse {
 }

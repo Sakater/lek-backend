@@ -1,6 +1,6 @@
 package com.example.lekbackend.dao
 
-import com.example.lekbackend.enums.Subjects
+import com.example.lekbackend.enums.Subject
 import com.example.lekbackend.enums.TaskType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -10,6 +10,8 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.OneToMany
+import jakarta.persistence.CascadeType
 import jakarta.persistence.SequenceGenerator
 import jakarta.persistence.Table
 import org.springframework.data.annotation.CreatedDate
@@ -20,47 +22,56 @@ import java.time.LocalDateTime
 @Entity
 @Table(name = "tasks")
 @EntityListeners(AuditingEntityListener::class)
-data class Tasks(
+data class Task(
     @Id
     @SequenceGenerator(name = "tasks_sequence", sequenceName = "tasks_sequence", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tasks_sequence")
     @Column(name = "id", insertable = false, updatable = false, nullable = false)
     val id: Long? = null,
 
+    @OneToMany(mappedBy = "task", cascade = [CascadeType.ALL])
+    val fileTasks: MutableSet<FileTask> = mutableSetOf(),
+
     @Column(nullable = false)
-    var question: String,
+    val question: String,
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    var type: TaskType,
+    val type: TaskType,
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    var subject: Subjects,
+    val subject: Subject,
 
     @Column(nullable = false)
-    var grade: Int,
+    val topic: String,
 
     @Column(nullable = false)
-    var hint: String,
+    val hint: String,
 
     @Column(nullable = false)
-    var level: Int,
+    val grade: Int,
 
     @Column(nullable = false)
-    var points: Int,
+    val level: Int,
+
+    @Column(nullable = false)
+    val points: Int,
 
     @Column(name = "options_in_a_row", nullable = true)
-    var optionsInARow: Int? = null,
+    val optionsInARow: Int? = null,
 
     @Column(name = "helping_lines", nullable = true)
-    var helpingLines: String? = null,
+    val helpingLines: String? = null,
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    var createdAt: LocalDateTime? = null,
+    val createdAt: LocalDateTime? = null,
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
-    var updatedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null,
+
+    @Column(nullable = true)
+    val createdBy: String? = null,
 )

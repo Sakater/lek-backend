@@ -1,8 +1,8 @@
 package com.example.lekbackend.controller
 
 import com.example.lekbackend.dto.RequestDto
-import com.example.lekbackend.dto.TasksRequest
-import com.example.lekbackend.dto.TasksResponse
+import com.example.lekbackend.dto.TaskRequest
+import com.example.lekbackend.dto.TaskResponse
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -14,9 +14,9 @@ class ApiController {
 
 
     @PostMapping("/search/tasks")
-    fun echo(@RequestBody request: TasksRequest): TasksResponse {
+    fun echo(@RequestBody request: TaskRequest): TaskResponse {
 
-        return TasksResponse()
+        return TaskResponse()
     }
 
     @PostMapping("/search/files")

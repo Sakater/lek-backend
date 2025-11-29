@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 @Entity
 @Table(name = "file_tasks")
 @EntityListeners(AuditingEntityListener::class)
-data class FileTasks(
+data class FileTask(
     @Id
     @SequenceGenerator(name = "file_tasks_sequence", sequenceName = "file_tasks_sequence", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "file_tasks_sequence")
@@ -16,16 +16,16 @@ data class FileTasks(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id", nullable = false)
-    val task: Tasks,
+    val task: Task,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "file_id", nullable = false)
-    val file: Files,
+    val file: File,
 
     @Column(nullable = false)
     val position: Int,
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    var createdAt: LocalDateTime? = null
+    val createdAt: LocalDateTime? = null
 )
