@@ -44,8 +44,8 @@ class Task(
     @Column(nullable = false)
     var level: Int,
 
-    @Column(nullable = false)
-    var points: Int,
+    @Column(nullable = true)
+    var points: Int? = null,
 
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     var options: MutableList<Option> = mutableListOf(),
