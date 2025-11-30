@@ -1,5 +1,6 @@
 package com.example.lekbackend.controller
 
+import com.example.lekbackend.dto.AddTaskRequest
 import com.example.lekbackend.dto.TaskRequest
 import com.example.lekbackend.dto.TaskResponse
 import com.example.lekbackend.services.TaskService
@@ -10,13 +11,19 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api")
-class ApiController (private val taskService: TaskService){
+class ApiController(private val taskService: TaskService) {
 
 
     @PostMapping("/search/tasks")
-    fun echo(@RequestBody request: TaskRequest): List<TaskResponse> {
+    fun searchTask(@RequestBody request: TaskRequest): List<TaskResponse> {
         return taskService.searchTasks(request)
     }
+
+    @PostMapping("/save/task")
+    fun saveTask(@RequestBody request: AddTaskRequest): TaskResponse {
+        return taskService.saveTask(request)
+    }
+
 
     /*@PostMapping("/search/files")
     fun echo(@RequestBody request: RequestDto): RequestDto {

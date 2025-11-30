@@ -11,61 +11,73 @@ import java.time.LocalDateTime
 @Entity
 @Table(name = "tasks")
 @EntityListeners(AuditingEntityListener::class)
-data class Task(
+class Task(
     @Id
     @SequenceGenerator(name = "tasks_sequence", sequenceName = "tasks_sequence", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tasks_sequence")
     @Column(name = "id", insertable = false, updatable = false, nullable = false)
-    val id: Long? = null,
+    var id: Long? = null,
 
     @OneToMany(mappedBy = "task", cascade = [CascadeType.ALL])
-    val fileTasks: MutableSet<FileTask> = mutableSetOf(),
+    var fileTasks: MutableSet<FileTask> = mutableSetOf(),
 
     @Column(nullable = false)
-    val question: String,
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    val type: TaskType,
+    var question: String,
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    val subject: Subject,
+    var type: TaskType,
 
     @Column(nullable = false)
-    val topic: String,
+    @Enumerated(EnumType.STRING)
+    var subject: Subject,
 
     @Column(nullable = false)
-    val hint: String,
+    var topic: String,
+
+    @Column(nullable = true)
+    var hint: String? = null,
 
     @Column(nullable = false)
-    val grade: Int,
+    var grade: Int,
 
     @Column(nullable = false)
-    val level: Int,
+    var level: Int,
 
     @Column(nullable = false)
-    val points: Int,
+    var points: Int,
 
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
-    val options: List<Option> = emptyList(),
+    var options: MutableList<Option> = mutableListOf(),
 
     @Column(name = "options_in_a_row", nullable = true)
-    val optionsInARow: Int? = null,
+    var optionsInARow: Int? = null,
 
     @Column(name = "helping_lines", nullable = true)
-    val helpingLines: String? = null,
+    var helpingLines: String? = null,
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: LocalDateTime? = null,
+    var createdAt: LocalDateTime? = null,
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
-    val updatedAt: LocalDateTime? = null,
+    var updatedAt: LocalDateTime? = null,
 
     @Column(nullable = true)
-    val createdBy: String? = null
+    var createdBy: String? = null
 
 
-    )
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Task) return false
+        return id != null && id == other.id
+    }
+
+    override fun hashCode(): Int = javaClass.hashCode()
+
+    override fun toString(): String {
+        return "Task(id=$id, question='$question', type=$type, subject=$subject, topic='$topic')"
+    }
+}
