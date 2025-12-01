@@ -12,8 +12,7 @@ import java.time.LocalDateTime
 @EntityListeners(AuditingEntityListener::class)
 data class File(
     @Id
-    @SequenceGenerator(name = "files_sequence", sequenceName = "files_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "files_sequence")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", insertable = false, updatable = false, nullable = false)
     val id: Long? = null,
 

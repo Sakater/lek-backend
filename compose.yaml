@@ -1,10 +1,18 @@
+
+version: '3.8'
 services:
-  mariadb:
-    image: 'mariadb:latest'
+  postgres:
+    image: postgres:16-alpine
+    container_name: lek-postgres
     environment:
-      - 'MARIADB_DATABASE=mydatabase'
-      - 'MARIADB_PASSWORD=secret'
-      - 'MARIADB_ROOT_PASSWORD=verysecret'
-      - 'MARIADB_USER=myuser'
+      POSTGRES_DB: lekdb
+      POSTGRES_USER: lekuser
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - '3306'
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    command: postgres -c shared_buffers=256MB -c max_connections=200
+
+volumes:
+  postgres_data:

@@ -10,12 +10,14 @@ import com.example.lekbackend.repository.OptionRepository
 import com.example.lekbackend.repository.TaskRepository
 import com.example.lekbackend.specification.TaskSpecification
 import org.springframework.stereotype.Service
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 
 @Service
 class TaskService(
     private val taskRepository: TaskRepository, private val optionRepository: OptionRepository
 ) {
-    fun searchTasks(request: TaskRequest): List<TaskResponse> {
+    /*fun searchTasks(request: TaskRequest): List<TaskResponse> {
         val spec = TaskSpecification.fromRequest(request)
         return taskRepository.findAll(spec).map { task ->
             // Mapping zu TaskResponse
@@ -41,26 +43,46 @@ class TaskService(
                 createdBy = task.createdBy
             )
         }
+    }*/
+    fun searchTasks(request: TaskRequest, pageable: Pageable): Page<Task> {
+        // Wenn Freitextsuche vorhanden, nutze FTS
+        val searchText = listOfNotNull(
+            request.text?.joinToString(" "),
+            request.question?.joinToString(" "),
+            request.topic?.joinToString(" "),
+            request.hint?.joinToString(" ")
+        ).joinToString(" ").trim()
+
+        return if (searchText.isNotEmpty()) {
+            // PostgreSQL Full-Text Search mit Ranking
+            taskRepository.advancedSearch(
+                searchText = searchText,
+                subject = request.subject?.firstOrNull()?.name,
+                grade = request.grade?.firstOrNull(),
+                pageable = pageable
+            )
+        } else {
+            // Normale Specification-basierte Suche
+            taskRepository.findAll(TaskSpecification.fromRequest(request), pageable)
+        }
     }
 
     fun saveTask(request: AddTaskRequest): TaskResponse {
         val task = if (request.id != null) {
             // Update existierender Task
-            taskRepository.findById(request.id).orElseThrow {
-                IllegalArgumentException("Task mit ID ${request.id} nicht gefunden")
-            }.apply {
-                this.question = request.question
-                this.type = request.type
-                this.subject = request.subject
-                this.topic = request.topic
-                this.hint = request.hint
-                this.grade = request.grade
-                this.level = request.level
-                this.points = request.points
-                this.optionsInARow = request.optionsInARow
-                this.helpingLines = request.helpingLines
-                this.createdBy = request.createdBy
-            }
+            taskRepository.findById(request.id).orElse(Task(
+                question = request.question,
+                type = request.type,
+                subject = request.subject,
+                topic = request.topic,
+                hint = request.hint,
+                grade = request.grade,
+                level = request.level,
+                points = request.points,
+                optionsInARow = request.optionsInARow,
+                helpingLines = request.helpingLines,
+                createdBy = request.createdBy
+            ))
         } else {
             Task(
                 question = request.question,

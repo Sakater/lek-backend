@@ -10,8 +10,7 @@ import java.time.LocalDateTime
 @EntityListeners(AuditingEntityListener::class)
 data class FileTask(
     @Id
-    @SequenceGenerator(name = "file_tasks_sequence", sequenceName = "file_tasks_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "file_tasks_sequence")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
