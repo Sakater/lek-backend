@@ -5,6 +5,7 @@ import com.example.lekbackend.dao.FileTask
 import com.example.lekbackend.dto.AddFileRequest
 import com.example.lekbackend.dto.AddFileResponse
 import com.example.lekbackend.dto.FileRequest
+import com.example.lekbackend.mapper.TaskMapper
 import com.example.lekbackend.repository.FileRepository
 import com.example.lekbackend.repository.FileTaskRepository
 import org.springframework.data.domain.Pageable
@@ -15,18 +16,21 @@ import org.springframework.transaction.annotation.Transactional
 class FileService(
     private val fileRepository: FileRepository,
     private val taskService: TaskService,
+    private val taskMapper: TaskMapper,
     private val fileTaskRepository: FileTaskRepository
 ) {
 
     fun searchFiles(request: FileRequest, pageable: Pageable): List<AddFileResponse> {
-        // Implement search logic here, possibly using specifications or custom queries
-        val files = fileRepository.findAll(pageable).content
+        val files = fileRepository.findAll(
+            FileSpecification.withCriteria(request),
+            pageable
+        ).content
 
         return files.map { file ->
             // lade FileTask-Einträge und mappe auf TaskResponse über TaskService
             val tasks = fileTaskRepository
                 .findAllByFileOrderByPosition(file)
-                .map { ft -> taskService.toTaskResponse(ft.task) }
+                .map { ft -> taskMapper.toResponse(ft.task) }
 
             AddFileResponse(
                 id = file.id,
@@ -75,7 +79,8 @@ class FileService(
             level = savedFile.level,
             createdAt = savedFile.createdAt,
             updatedAt = savedFile.updatedAt,
-            createdBy = savedFile.createdBy
+            createdBy = savedFile.createdBy,
+            tasks = null
         )
     }
 
