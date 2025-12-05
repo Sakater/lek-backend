@@ -1,5 +1,6 @@
 package com.example.lekbackend.dao
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
@@ -16,6 +17,7 @@ data class Option(
     val id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "task_id", nullable = false)
     val task: Task,
 

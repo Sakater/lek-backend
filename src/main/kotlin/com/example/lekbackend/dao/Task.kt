@@ -71,7 +71,7 @@ class Task(
     @Column(name = "updated_at", nullable = false)
     var updatedAt: LocalDateTime? = null,
 
-    @Column(nullable = true)
+    @Column(name = "created_by",nullable = true)
     var createdBy: String? = null,
 
     @Column(nullable = false)

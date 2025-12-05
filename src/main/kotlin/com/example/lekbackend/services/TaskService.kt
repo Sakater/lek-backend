@@ -4,8 +4,10 @@ import com.example.lekbackend.dao.Option
 import com.example.lekbackend.dao.Task
 import com.example.lekbackend.dto.AddTaskRequest
 import com.example.lekbackend.dto.OptionDto
+import com.example.lekbackend.dto.OptionResponse
 import com.example.lekbackend.dto.TaskRequest
 import com.example.lekbackend.dto.TaskResponse
+import com.example.lekbackend.mapper.TaskMapper
 import com.example.lekbackend.repository.OptionRepository
 import com.example.lekbackend.repository.TaskRepository
 import com.example.lekbackend.specification.TaskSpecification
@@ -15,37 +17,37 @@ import org.springframework.data.domain.Pageable
 
 @Service
 class TaskService(
-    private val taskRepository: TaskRepository, private val optionRepository: OptionRepository
+    private val taskRepository: TaskRepository, private val optionRepository: OptionRepository,
+    private val taskMapper: TaskMapper
 ) {
     /*fun searchTasks(request: TaskRequest): List<TaskResponse> {
-        val spec = TaskSpecification.fromRequest(request)
-        return taskRepository.findAll(spec).map { task ->
-            // Mapping zu TaskResponse
-            TaskResponse(
-                id = task.id!!,
-                question = task.question,
-                type = task.type,
-                subject = task.subject,
-                topic = task.topic,
-                hint = task.hint,
-                grade = task.grade,
-                level = task.level,
-                points = task.points,
-                options = task.options.sortedBy { it.position }.map { option ->
-                    OptionDto(
-                        id = option.id!!, optionText = option.optionText, position = option.position
-                    )
-                },
-                optionsInARow = task.optionsInARow,
-                helpingLines = task.helpingLines,
-                createdAt = task.createdAt,
-                updatedAt = task.updatedAt,
-                createdBy = task.createdBy
-            )
-        }
-    }*/
-    fun searchTasks(request: TaskRequest, pageable: Pageable): Page<Task> {
-        // Wenn Freitextsuche vorhanden, nutze FTS
+            val spec = TaskSpecification.fromRequest(request)
+            return taskRepository.findAll(spec).map { task ->
+                // Mapping zu TaskResponse
+                TaskResponse(
+                    id = task.id!!,
+                    question = task.question,
+                    type = task.type,
+                    subject = task.subject,
+                    topic = task.topic,
+                    hint = task.hint,
+                    grade = task.grade,
+                    level = task.level,
+                    points = task.points,
+                    options = task.options.sortedBy { it.position }.map { option ->
+                        OptionDto(
+                            id = option.id!!, optionText = option.optionText, position = option.position
+                        )
+                    },
+                    optionsInARow = task.optionsInARow,
+                    helpingLines = task.helpingLines,
+                    createdAt = task.createdAt,
+                    updatedAt = task.updatedAt,
+                    createdBy = task.createdBy
+                )
+            }
+        }*/
+    fun searchTasks(request: TaskRequest, pageable: Pageable): Page<TaskResponse> {
         val searchText = listOfNotNull(
             request.text?.joinToString(" "),
             request.question?.joinToString(" "),
@@ -53,8 +55,7 @@ class TaskService(
             request.hint?.joinToString(" ")
         ).joinToString(" ").trim()
 
-        return if (searchText.isNotEmpty()) {
-            // PostgreSQL Full-Text Search mit Ranking
+        val tasks = if (searchText.isNotEmpty()) {
             taskRepository.advancedSearch(
                 searchText = searchText,
                 subject = request.subject?.firstOrNull()?.name,
@@ -62,12 +63,14 @@ class TaskService(
                 pageable = pageable
             )
         } else {
-            // Normale Specification-basierte Suche
             taskRepository.findAll(TaskSpecification.fromRequest(request), pageable)
         }
+
+        return tasks.map { taskMapper.toResponse(it) }
     }
 
-    fun saveTask(request: AddTaskRequest): TaskResponse {
+
+    fun saveTask(request: AddTaskRequest): Task {
         val task = if (request.id != null) {
             // Update existierender Task
             taskRepository.findById(request.id).orElse(Task(
@@ -109,23 +112,7 @@ class TaskService(
             optionRepository.save(option)
         } ?: emptyList()
 
-        return TaskResponse(
-            id = savedTask.id!!,
-            question = savedTask.question,
-            type = savedTask.type,
-            subject = savedTask.subject,
-            topic = savedTask.topic,
-            hint = savedTask.hint,
-            grade = savedTask.grade,
-            level = savedTask.level,
-            points = savedTask.points,
-            options = savedOptions.map { option -> OptionDto(option.id!!, option.optionText, option.position) },
-            optionsInARow = savedTask.optionsInARow,
-            helpingLines = savedTask.helpingLines,
-            createdAt = savedTask.createdAt,
-            updatedAt = savedTask.updatedAt,
-            createdBy = savedTask.createdBy
-        )
+        return task
     }
 
 }

@@ -30,12 +30,20 @@ interface TaskRepository : JpaRepository<Task, Long>, JpaSpecificationExecutor<T
           AND (:subject IS NULL OR t.subject = CAST(:subject AS text))
           AND (:grade IS NULL OR t.grade = :grade)
           AND t.approved = true
-        ORDER BY 
-            CASE WHEN :searchText IS NOT NULL 
-            THEN ts_rank(t.search_vector, plainto_tsquery('german', :searchText)) 
+        ORDER BY
+            CASE WHEN :searchText IS NOT NULL
+            THEN ts_rank(t.search_vector, plainto_tsquery('german', :searchText))
             ELSE 0 END DESC,
             t.created_at DESC
-    """, nativeQuery = true
+    """,
+        countQuery = """
+        SELECT COUNT(*) FROM tasks t
+        WHERE (:searchText IS NULL OR t.search_vector @@ plainto_tsquery('german', :searchText))
+          AND (:subject IS NULL OR t.subject = CAST(:subject AS text))
+          AND (:grade IS NULL OR t.grade = :grade)
+          AND t.approved = true
+    """,
+        nativeQuery = true
     )
     fun advancedSearch(
         searchText: String?,

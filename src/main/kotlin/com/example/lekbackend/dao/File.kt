@@ -20,17 +20,14 @@ data class File(
     val fileTasks: MutableSet<FileTask> = mutableSetOf(),
 
     @Column(nullable = false)
-    val author: String,
-
-    @Column(nullable = false)
     val title: String,
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    val subject: Subject? = null,
+    val subject: MutableSet<Subject>,
 
     @Column(nullable = false)
-    val topic: String,
+    val topic: MutableSet<String>,
 
     @Column(nullable = true)
     val grade: Int? = null,
@@ -44,5 +41,10 @@ data class File(
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
-    val updatedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null,
+
+    @Column(name = "created_by", nullable = true)
+    val createdBy: String? = null
+
+
 )

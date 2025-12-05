@@ -2,16 +2,16 @@
 version: '3.8'
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:latest
     container_name: lek-postgres
     environment:
       POSTGRES_DB: lekdb
       POSTGRES_USER: lekuser
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_PASSWORD: lekpw
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     command: postgres -c shared_buffers=256MB -c max_connections=200
 
 volumes:

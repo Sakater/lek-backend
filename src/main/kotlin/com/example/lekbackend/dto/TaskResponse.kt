@@ -14,7 +14,7 @@ data class TaskResponse(
     val grade: Int,
     val level: Int,
     val points: Int? = null,
-    val options: List<OptionDto> = emptyList(),
+    val options: List<OptionResponse> = emptyList(),
     val optionsInARow: Int? = null,
     val helpingLines: String? = null,
     val createdAt: LocalDateTime? = null,
